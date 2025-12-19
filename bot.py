@@ -1,38 +1,58 @@
 import os
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram import Update
+from telegram.ext import Application, MessageHandler, filters, ContextTypes
 
-# Aapki Java File ID
-JAVA_ID = "BQACAgUAAxkBAANGAuUO54TJUPdOVXBLOcxdT3Xv1PcAAkobAAlm1ShWMvWKko0768M2BA"
+# --- Yahan apni Admin ID daalo ---
+ADMIN_ID = 2104563445 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Buttons ka design - Code mein aur Button mein text ekdum same hona chahiye
-    keyboard = [['Java_chartsheet 📚', 'Physics 🍎'], ['Help 💡']]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    await update.message.reply_text("Bhai ab code fix hai! Buttons dabao:", reply_markup=reply_markup)
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
+async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
     
-    # Check karte hain ki kaunsa button dabaya gaya
-    if text == 'Java_chartsheet 📚':
-        await context.bot.send_document(
-            chat_id=update.effective_chat.id, 
-            document=JAVA_ID, 
-            caption="Ye lo bhai Java Cheatsheet! 🔥"
+    # Check karega ki bhejnewala sirf aap ho ya nahi
+    if user_id == ADMIN_ID:
+        # Check files: Document, Video, Photo, ya Audio
+        if update.message.document:
+            file_id = update.message.document.file_id
+            file_type = "Document"
+        elif update.message.video:
+            file_id = update.message.video.file_id
+            file_type = "Video"
+        elif update.message.photo:
+            file_id = update.message.photo[-1].file_id # Sabse high quality photo
+            file_type = "Photo"
+        elif update.message.audio:
+            file_id = update.message.audio.file_id
+            file_type = "Audio"
+        else:
+            return
+
+        # Aapko sundar format mein ID bhejega
+        response = (
+            f"✅ **{file_type} ki ID mil gayi!**\n\n"
+            f"`{file_id}`\n\n"
+            f"👆 Isse copy karke apne main bot mein use karlo."
         )
-    elif text == 'Help 💡':
-        await update.message.reply_text("Buttons pe click karo bhai, notes mil jayenge!")
+        await update.message.reply_text(response, parse_mode='Markdown')
+    else:
+        # Agar koi aur file bhejta hai toh bot ignore karega
+        pass
 
 def main():
-    token = os.getenv("BOT_TOKEN")
+    # Apna naya Bot Token yahan environment variable mein set karein
+    token = os.getenv("ID_BOT_TOKEN") 
+    
+    if not token:
+        print("Error: ID_BOT_TOKEN nahi mila!")
+        return
+
     application = Application.builder().token(token).build()
 
-    application.add_handler(CommandHandler("start", start))
-    # Ye line zaroori hai buttons ko read karne ke liye
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    # Ye handler har tarah ki files (Document, Video, Photo) ko detect karega
+    application.add_handler(MessageHandler(filters.ATTACHMENT, get_file_id))
 
+    print("ID Generator Bot chalu ho gaya hai...")
     application.run_polling()
 
 if __name__ == '__main__':
     main()
+    
