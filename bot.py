@@ -1,53 +1,90 @@
-import os
+import logging
 from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 
-# --- Yahan apni Admin ID daalo ---
+# 1. Yahan apni Admin ID daalo
 ADMIN_ID = 2104563445 
 
-async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Sirf admin check
+# Logging setup (taaki error aaye toh terminal pe dikhe)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+async def get_id_logic(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Sirf aapko reply karega
     if update.effective_user.id != ADMIN_ID:
         return
 
-    # File detect logic
     file_id = None
-    file_type = ""
-
+    
+    # Har tarah ki file check karega
     if update.message.document:
         file_id = update.message.document.file_id
-        file_type = "Document"
     elif update.message.video:
         file_id = update.message.video.file_id
-        file_type = "Video"
     elif update.message.photo:
         file_id = update.message.photo[-1].file_id
-        file_type = "Photo"
     elif update.message.audio:
         file_id = update.message.audio.file_id
-        file_type = "Audio"
 
     if file_id:
-        await update.message.reply_text(
-            f"✅ **{file_type} ID mil gayi!**\n\n`{file_id}`",
-            parse_mode='Markdown'
-        )
+        await update.message.reply_text(f"✅ **ID Mil Gayi:**\n\n`{file_id}`", parse_mode='Markdown')
 
 def main():
-    # Is bot ke liye ek naya TOKEN use karein (BotFather se le kar)
-    token = "YAHAN_APNA_NEW_BOT_TOKEN_DAALO" 
-    
-    if not token or token == "YAHAN_APNA_NEW_BOT_TOKEN_DAALO":
-        print("Error: Please provide a valid Bot Token!")
+    # 2. Yahan apna Naya Bot Token dalo
+    TOKEN = "import logging
+from telegram import Update
+from telegram.ext import Application, MessageHandler, filters, ContextTypes
+
+# 1. Yahan apni Admin ID daalo
+ADMIN_ID = 2104563445 
+
+# Logging setup (taaki error aaye toh terminal pe dikhe)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+async def get_id_logic(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Sirf aapko reply karega
+    if update.effective_user.id != ADMIN_ID:
         return
 
-    application = Application.builder().token(token).build()
+    file_id = None
+    
+    # Har tarah ki file check karega
+    if update.message.document:
+        file_id = update.message.document.file_id
+    elif update.message.video:
+        file_id = update.message.video.file_id
+    elif update.message.photo:
+        file_id = update.message.photo[-1].file_id
+    elif update.message.audio:
+        file_id = update.message.audio.file_id
 
-    # Filters.ALL se ye har tarah ki file pakad lega
-    application.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, get_file_id))
+    if file_id:
+        await update.message.reply_text(f"✅ **ID Mil Gayi:**\n\n`{file_id}`", parse_mode='Markdown')
 
-    print("ID Generator Bot ready hai... File bhejo bhai!")
-    application.run_polling()
+def main():
+    # 2. Yahan apna Naya Bot Token dalo
+    TOKEN = "8275861375:AAFJnfntOp1zVTiHwFMrDYxDqiDUsfsSeuk" # <--- Apna token yahan paste karo
+
+    # Application build
+    app = Application.builder().token(TOKEN).build()
+
+    # Filter ko 'ALL' rakha hai taaki kuch bhi miss na ho
+    app.add_handler(MessageHandler(filters.ALL, get_id_logic))
+
+    print("Bot chalu hai... File bhejo!")
+    app.run_polling()
+
+if __name__ == '__main__':
+    main()
+ # <--- Apna token yahan paste karo
+
+    # Application build
+    app = Application.builder().token(TOKEN).build()
+
+    # Filter ko 'ALL' rakha hai taaki kuch bhi miss na ho
+    app.add_handler(MessageHandler(filters.ALL, get_id_logic))
+
+    print("Bot chalu hai... File bhejo!")
+    app.run_polling()
 
 if __name__ == '__main__':
     main()
