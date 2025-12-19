@@ -1,23 +1,42 @@
 import os
-from telegram import Update
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-# 1. Start Command - Isse confirm hoga ki naya code chal raha hai
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Bhai, ab code update ho gaya hai! Mujhe koi bhi PDF bhejo, main turant ID de dunga.")
+# --- YAHAN APNI FILE IDs DALO ---
+JAVA_CHEATSHEET_PDF = "BQACAgUAAxkBAANGaUUO54TJUPdOVXBLOcxdT3Xv1PcAAkobAAIm1ShWMvWKko0768M2BA"
+MATHS_PDF = "PASTE_YOUR_MATH_ID_HERE"
+PHYSICS_PDF = "PASTE_YOUR_PHYSICS_ID_HERE"
 
-# 2. File ID nikalne wala function
-async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    file_id = update.message.document.file_id
-    await update.message.reply_text(f"Ye rahi tumhari PDF ki ID:\n\n{file_id}")
+# 1. Start Command (Buttons ke saath)
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Buttons ka design
+    keyboard = [['Maths 📚', 'Physics 🍎'], ['Help 💡']]
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    
+    await update.message.reply_text(
+        "Welcome bhai! Konsa notes chahiye? Niche buttons use karo:",
+        reply_markup=reply_markup
+    )
+
+# 2. Buttons click hone par kya hoga
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+
+    if text == 'java cheatsheet':
+        await context.bot.send_document(chat_id=update.effective_chat.id, document=JAVA_CHEATSHEET_PDF, caption="Ye lo java cheatsheet ke notes! 🔥")
+    
+    elif text == 'Physics 🍎':
+        await context.bot.send_document(chat_id=update.effective_chat.id, document=PHYSICS_PDF, caption="Ye lo Physics ke notes! 🚀")
+    
+    elif text == 'Help 💡':
+        await update.message.reply_text("Bhai simple hai, buttons pe click karo notes mil jayenge!")
 
 def main():
     token = os.getenv("BOT_TOKEN")
     application = Application.builder().token(token).build()
 
     application.add_handler(CommandHandler("start", start))
-    # Ye line har document ko pakdegi
-    application.add_handler(MessageHandler(filters.Document.ALL, handle_document))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     application.run_polling()
 
