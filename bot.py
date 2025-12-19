@@ -4,13 +4,13 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 
 # --- YAHAN APNI FILE IDs DALO ---
 JAVA_CHEATSHEET_PDF = "BQACAgUAAxkBAANGaUUO54TJUPdOVXBLOcxdT3Xv1PcAAkobAAIm1ShWMvWKko0768M2BA"
-MATHS_PDF = "PASTE_YOUR_MATH_ID_HERE"
+JAVA_PDF = "BQACAgUAAxkBAANGaUUO54TJUPdOVXBLOcxdT3Xv1PcAAkobAAIm1ShWMvWKko0768M2BA"
 PHYSICS_PDF = "PASTE_YOUR_PHYSICS_ID_HERE"
 
 # 1. Start Command (Buttons ke saath)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Buttons ka design
-    keyboard = [['Maths 📚', 'Physics 🍎'], ['Help 💡']]
+    keyboard = [['Java_chartsheet 📚', 'Physics 🍎'], ['Help 💡']]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
     await update.message.reply_text(
@@ -22,7 +22,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
-    if text == 'java cheatsheet':
+    if text == 'java 😈':
         await context.bot.send_document(chat_id=update.effective_chat.id, document=JAVA_CHEATSHEET_PDF, caption="Ye lo java cheatsheet ke notes! 🔥")
     
     elif text == 'Physics 🍎':
@@ -42,3 +42,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
